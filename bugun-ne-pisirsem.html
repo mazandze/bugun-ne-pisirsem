@@ -1,0 +1,662 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bugün Ne Pişirsem? — Dolabına Göre Tarif</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Space+Mono:wght@400;700&family=Caveat:wght@500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#F2ECD8;
+    --card:#FFFDF7;
+    --ink:#2B2620;
+    --ink-soft:#5b5346;
+    --red:#B23A2E;
+    --green:#33503D;
+    --mustard:#C68B12;
+    --line:#C9C0A8;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    background:var(--paper);
+    background-image:
+      radial-gradient(circle at 1px 1px, rgba(43,38,32,0.06) 1px, transparent 0);
+    background-size: 22px 22px;
+    color:var(--ink);
+    font-family:'Space Mono', monospace;
+    line-height:1.5;
+    padding-bottom:80px;
+  }
+  a{color:inherit;}
+  .wrap{max-width:1080px;margin:0 auto;padding:28px 20px;}
+
+  /* ---------- HERO / RECEIPT HEADER ---------- */
+  .hero{
+    background:var(--card);
+    border:1px solid var(--line);
+    padding:34px 30px 28px;
+    position:relative;
+    box-shadow:0 2px 0 var(--line);
+  }
+  .hero::after{
+    content:"";
+    position:absolute;left:0;right:0;bottom:-11px;height:11px;
+    background:
+      linear-gradient(-45deg, transparent 9px, var(--paper) 0),
+      linear-gradient(45deg, transparent 9px, var(--paper) 0);
+    background-size:18px 18px;
+    background-position:left bottom;
+    background-repeat:repeat-x;
+  }
+  .fis-no{
+    font-size:11px; letter-spacing:.12em; color:var(--ink-soft);
+    display:flex; justify-content:space-between; flex-wrap:wrap; gap:6px;
+    border-bottom:1px dashed var(--line); padding-bottom:14px; margin-bottom:18px;
+  }
+  h1{
+    font-family:'Archivo Black', sans-serif;
+    font-size:clamp(30px, 5.2vw, 52px);
+    line-height:1.02;
+    margin:0 0 10px;
+    letter-spacing:-0.5px;
+  }
+  h1 span{color:var(--red);}
+  .hero p.sub{
+    max-width:600px; margin:0; color:var(--ink-soft); font-size:14.5px;
+  }
+  .note{
+    font-family:'Caveat', cursive; font-size:22px; color:var(--green);
+    transform:rotate(-2deg); display:inline-block; margin-top:14px;
+  }
+
+  /* ---------- SECTION LABELS ---------- */
+  .section-label{
+    font-family:'Archivo Black', sans-serif;
+    font-size:13px; letter-spacing:.14em; text-transform:uppercase;
+    color:var(--red);
+    margin:38px 0 12px;
+    display:flex; align-items:center; gap:10px;
+  }
+  .section-label::after{
+    content:""; flex:1; height:1px; background:repeating-linear-gradient(90deg, var(--line) 0 6px, transparent 0 10px);
+  }
+
+  /* ---------- PANTRY (ingredient picker) ---------- */
+  .pantry{
+    background:var(--card); border:1px solid var(--line); padding:22px 22px 8px;
+  }
+  .cat-block{margin-bottom:18px;}
+  .cat-title{font-size:11px; letter-spacing:.1em; text-transform:uppercase; color:var(--ink-soft); margin-bottom:8px;}
+  .chips{display:flex; flex-wrap:wrap; gap:8px;}
+  .chip{
+    border:1.5px solid var(--line);
+    background:var(--paper);
+    padding:7px 13px;
+    font-family:'Space Mono', monospace;
+    font-size:13px;
+    cursor:pointer;
+    user-select:none;
+    transition:background .12s, border-color .12s, color .12s, transform .08s;
+  }
+  .chip:hover{border-color:var(--ink-soft);}
+  .chip:active{transform:scale(0.97);}
+  .chip.active{
+    background:var(--green); border-color:var(--green); color:#fff;
+  }
+  .chip.staple{
+    border-style:dashed;
+  }
+  .chip:focus-visible{outline:2px solid var(--red); outline-offset:2px;}
+
+  /* ---------- FILTER BAR ---------- */
+  .filters{
+    display:flex; flex-wrap:wrap; gap:16px; align-items:flex-end;
+    background:var(--card); border:1px solid var(--line); padding:18px 22px; margin-top:14px;
+  }
+  .field{display:flex; flex-direction:column; gap:6px;}
+  .field label{font-size:11px; letter-spacing:.08em; text-transform:uppercase; color:var(--ink-soft);}
+  .field.grow{flex:1; min-width:180px;}
+  select, input[type="search"]{
+    font-family:'Space Mono', monospace; font-size:13.5px;
+    border:1.5px solid var(--ink); background:var(--paper); color:var(--ink);
+    padding:8px 10px;
+  }
+  input[type="search"]{width:100%;}
+  select:focus-visible, input:focus-visible{outline:2px solid var(--red); outline-offset:2px;}
+  .reset-btn{
+    margin-left:auto; background:none; border:1.5px solid var(--red); color:var(--red);
+    font-family:'Space Mono', monospace; font-weight:700; font-size:12.5px;
+    padding:9px 14px; cursor:pointer; letter-spacing:.06em; text-transform:uppercase;
+  }
+  .reset-btn:hover{background:var(--red); color:#fff;}
+
+  /* ---------- RESULT SUMMARY LINE ---------- */
+  .total-line{
+    display:flex; justify-content:space-between; align-items:baseline;
+    border-top:1px dashed var(--line); border-bottom:1px dashed var(--line);
+    padding:10px 2px; margin:22px 0 4px; font-size:13px;
+  }
+  .total-line b{font-family:'Archivo Black', sans-serif; font-size:15px;}
+
+  /* ---------- RESULTS GRID ---------- */
+  .grid{
+    display:grid; grid-template-columns:repeat(auto-fill, minmax(280px, 1fr)); gap:22px 18px; margin-top:18px;
+  }
+  .card{
+    background:var(--card); border:1px solid var(--line);
+    padding:20px 18px 16px; position:relative;
+    box-shadow:0 2px 0 var(--line);
+  }
+  .card::after{
+    content:"";
+    position:absolute;left:0;right:0;bottom:-9px;height:9px;
+    background:
+      linear-gradient(-45deg, transparent 7px, var(--paper) 0),
+      linear-gradient(45deg, transparent 7px, var(--paper) 0);
+    background-size:14px 14px; background-position:left bottom; background-repeat:repeat-x;
+  }
+  .stamp{
+    position:absolute; top:14px; right:14px;
+    width:78px; height:78px; border-radius:50%;
+    border:3px solid var(--green); color:var(--green);
+    display:flex; align-items:center; justify-content:center; text-align:center;
+    font-family:'Archivo Black', sans-serif; font-size:10px; text-transform:uppercase;
+    line-height:1.15; transform:rotate(-11deg); opacity:.88; padding:4px;
+  }
+  .stamp.partial{border-color:var(--mustard); color:var(--mustard);}
+  .stamp.far{border-color:var(--red); color:var(--red);}
+  .card h3{
+    font-family:'Archivo Black', sans-serif; font-size:19px; margin:0 42px 6px 0; letter-spacing:-.2px;
+  }
+  .meta{font-size:11.5px; color:var(--ink-soft); letter-spacing:.03em; margin-bottom:14px;}
+  .meta span{margin-right:10px;}
+  .meta .vej{color:var(--green); font-weight:700;}
+  .ing-list{list-style:none; margin:0 0 10px; padding:0; font-size:13px;}
+  .ing-list li{padding:2px 0; display:flex; gap:8px;}
+  .ing-list li.have::before{content:"✓"; color:var(--green); font-weight:700;}
+  .ing-list li.miss{color:var(--red);}
+  .ing-list li.miss::before{content:"–"; color:var(--red); font-weight:700;}
+  .divider{border-top:1px dashed var(--line); margin:10px 0;}
+  .missing-line{font-size:12px; color:var(--red); margin-bottom:8px;}
+  .card-btns{display:flex; gap:8px;}
+  .expand-btn, .list-btn{
+    background:none; border:1.5px solid var(--ink); color:var(--ink);
+    font-family:'Space Mono', monospace; font-size:11.5px; letter-spacing:.03em;
+    padding:7px 10px; cursor:pointer; text-transform:uppercase; flex:1;
+  }
+  .expand-btn:hover{background:var(--ink); color:var(--card);}
+  .list-btn{border-color:var(--mustard); color:var(--mustard);}
+  .list-btn:hover{background:var(--mustard); color:#fff;}
+  .list-btn:disabled{opacity:.4; cursor:default; background:none; color:var(--ink-soft); border-color:var(--line);}
+  .steps{
+    margin-top:12px; padding-top:10px; border-top:1px dashed var(--line);
+    font-size:13px; display:none;
+  }
+  .steps.open{display:block;}
+  .steps ol{margin:0; padding-left:18px;}
+  .steps li{margin-bottom:6px;}
+
+  .empty{
+    text-align:center; padding:50px 20px; color:var(--ink-soft); font-size:14px;
+    border:1.5px dashed var(--line); margin-top:18px; background:var(--card);
+  }
+  .empty .big{font-family:'Caveat', cursive; font-size:26px; color:var(--green); display:block; margin-bottom:8px;}
+
+  /* ---------- SHOPPING LIST FİŞ ---------- */
+  .shop-fis{
+    background:var(--card); border:1px solid var(--line); padding:22px 26px; margin-top:40px; max-width:380px;
+    box-shadow:0 2px 0 var(--line); position:relative;
+  }
+  .shop-fis::after{
+    content:"";
+    position:absolute;left:0;right:0;bottom:-9px;height:9px;
+    background:
+      linear-gradient(-45deg, transparent 7px, var(--paper) 0),
+      linear-gradient(45deg, transparent 7px, var(--paper) 0);
+    background-size:14px 14px; background-position:left bottom; background-repeat:repeat-x;
+  }
+  .shop-fis h4{font-family:'Archivo Black', sans-serif; font-size:14px; margin:0 0 4px; letter-spacing:.04em;}
+  .shop-fis .sub-sm{font-size:11px; color:var(--ink-soft); border-bottom:1px dashed var(--line); padding-bottom:10px; margin-bottom:10px;}
+  .shop-list{list-style:none; margin:0; padding:0; font-size:13.5px;}
+  .shop-list li{display:flex; justify-content:space-between; align-items:center; padding:5px 0; border-bottom:1px dotted var(--line);}
+  .shop-list li button{background:none; border:none; color:var(--red); cursor:pointer; font-size:14px; font-weight:700;}
+  .shop-empty{font-size:12.5px; color:var(--ink-soft); font-style:italic; padding:6px 0;}
+  .shop-actions{display:flex; gap:8px; margin-top:14px;}
+  .shop-actions button{
+    flex:1; font-family:'Space Mono', monospace; font-size:11px; text-transform:uppercase;
+    padding:8px; cursor:pointer; border:1.5px solid var(--ink); background:none; color:var(--ink);
+  }
+  .shop-actions button:hover{background:var(--ink); color:var(--card);}
+
+  footer{
+    max-width:1080px; margin:50px auto 0; padding:20px; text-align:center;
+    font-size:11px; color:var(--ink-soft); letter-spacing:.05em;
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    *{transition:none !important; scroll-behavior:auto !important;}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="hero">
+    <div class="fis-no">
+      <span id="fisNo">FİŞ NO: 0000</span>
+      <span id="fisTarih">TARİH: --.--.----</span>
+    </div>
+    <h1>Bugün ne <span>pişirsem?</span></h1>
+    <p class="sub">Dolabındakileri işaretle. 1-2 malzeme eksik olsa bile ne pişirebileceğini bulalım, eksikleri de otomatik market listesine ekleyelim.</p>
+    <span class="note">not: tuz, şeker, sıvı yağ zaten hep vardır :)</span>
+  </div>
+
+  <div class="section-label">Dolabında ne var?</div>
+  <div class="pantry" id="pantry"></div>
+
+  <div class="filters">
+    <div class="field grow">
+      <label for="search">Tarif ara</label>
+      <input type="search" id="search" placeholder="örn. çorba, tavuk, kısır...">
+    </div>
+    <div class="field">
+      <label for="tolerance">Eksik toleransı</label>
+      <select id="tolerance">
+        <option value="0">Sadece tam uygun</option>
+        <option value="1" selected>1 eksiğe kadar</option>
+        <option value="2">2 eksiğe kadar</option>
+        <option value="3">3 eksiğe kadar</option>
+        <option value="99">Hepsini göster</option>
+      </select>
+    </div>
+    <div class="field">
+      <label for="budget">Bütçe</label>
+      <select id="budget">
+        <option value="all">Hepsi</option>
+        <option value="öğrenci">Öğrenci bütçesi</option>
+        <option value="orta">Orta</option>
+        <option value="özel">Özel gün</option>
+      </select>
+    </div>
+    <div class="field">
+      <label for="kategori">Öğün / Tür</label>
+      <select id="kategori">
+        <option value="all">Hepsi</option>
+        <option value="Çorba">Çorba</option>
+        <option value="Ana Yemek">Ana Yemek</option>
+        <option value="Kahvaltı">Kahvaltı</option>
+        <option value="Meze">Meze</option>
+        <option value="Tatlı">Tatlı</option>
+        <option value="İçecek">İçecek</option>
+      </select>
+    </div>
+    <div class="field">
+      <label for="diyet">Diyet</label>
+      <select id="diyet">
+        <option value="all">Hepsi</option>
+        <option value="vej">Sadece vejetaryen</option>
+      </select>
+    </div>
+    <div class="field">
+      <label for="sort">Sırala</label>
+      <select id="sort">
+        <option value="eslesme">En uygun</option>
+        <option value="sure">En kısa süre</option>
+        <option value="isim">İsim (A-Z)</option>
+      </select>
+    </div>
+    <button class="reset-btn" id="resetBtn">Dolabı Sıfırla</button>
+  </div>
+
+  <div class="total-line">
+    <span>MUTFAĞINA UYGUN TARİF</span>
+    <b id="totalCount">0</b>
+  </div>
+
+  <div class="grid" id="results"></div>
+  <div class="empty" id="emptyState" style="display:none;">
+    <span class="big">Hmm, dolap biraz boş görünüyor...</span>
+    Eşiği artır, aramayı temizle ya da birkaç malzeme daha işaretle.
+  </div>
+
+  <div class="shop-fis">
+    <h4>🛒 EKSİK MALZEME LİSTEM</h4>
+    <div class="sub-sm">Beğendiğin tariflerden "Eksikleri Ekle" ile buraya topla, markete öyle git.</div>
+    <ul class="shop-list" id="shopList"></ul>
+    <div class="shop-empty" id="shopEmpty">Liste şu an boş.</div>
+    <div class="shop-actions">
+      <button id="copyBtn">Kopyala</button>
+      <button id="clearShopBtn">Temizle</button>
+    </div>
+  </div>
+
+</div>
+
+<footer>BUGÜN NE PİŞİRSEM — kendi mutfağının fişi · malzeme seçimin hiçbir yere kaydedilmez · 43 tarif</footer>
+
+<script>
+const STAPLES = ["tuz","şeker","sıvı yağ"];
+
+const CATEGORIES = [
+  {name:"Temel Kiler", items:["soğan","sarımsak","domates","salça","un","tereyağı","sıvı yağ","tuz","şeker","limon","karabiber","bal","ekmek"]},
+  {name:"Sebze & Meyve", items:["patates","patlıcan","kabak","ıspanak","havuç","yeşil biber","sivri biber","salatalık","brokoli","elma","taze fasulye"]},
+  {name:"Bakliyat & Tahıl", items:["kırmızı mercimek","nohut","kuru fasulye","pirinç","ince bulgur","iri bulgur","makarna","irmik","şehriye","hazır mantı"]},
+  {name:"Et, Tavuk & Deniz Ürünleri", items:["kıyma","tavuk but","tavuk göğsü","kuşbaşı et","sucuk","balık","karides"]},
+  {name:"Süt & Yumurta", items:["yumurta","yoğurt","süt","beyaz peynir","kaşar peyniri","tahin"]},
+  {name:"Baharat & Diğer", items:["nane","maydanoz","pul biber","çam fıstığı","nişasta","galeta unu","kabartma tozu","ceviz","kahve"]}
+];
+
+const RECIPES = [
+  {name:"Mercimek Çorbası", kategori:"Çorba", sure:30, butce:"öğrenci", vej:true,
+   ing:["kırmızı mercimek","soğan","havuç","patates","un","tereyağı","tuz","pul biber"],
+   steps:["Soğan ve havucu küçük doğrayıp tereyağında kavurun.","Mercimek ve patatesi ekleyip suyla birlikte yumuşayana kadar haşlayın.","Blenderdan geçirip tuzunu ayarlayın.","Üzerine pul biberli tereyağı gezdirerek servis edin."]},
+  {name:"Ezogelin Çorbası", kategori:"Çorba", sure:35, butce:"öğrenci", vej:true,
+   ing:["kırmızı mercimek","ince bulgur","soğan","salça","nane","tereyağı","tuz"],
+   steps:["Soğanı tereyağında kavurup salçayı ekleyin.","Mercimek, bulgur ve suyu ilave edip kaynatın.","Malzemeler yumuşayınca tuzunu ayarlayın.","Kurutulmuş nane ile servis edin."]},
+  {name:"Domates Çorbası", kategori:"Çorba", sure:20, butce:"öğrenci", vej:true,
+   ing:["domates","soğan","un","tereyağı","şeker","tuz"],
+   steps:["Soğanı tereyağında kavurup unu ekleyip kısa süre kavurun.","Doğranmış domatesi ve suyu ekleyip kaynatın.","Blenderdan geçirin, tuz ve şekerle tatlandırın."]},
+  {name:"Karnıyarık", kategori:"Ana Yemek", sure:60, butce:"orta", vej:false,
+   ing:["patlıcan","kıyma","soğan","domates","sivri biber","sarımsak","salça","sıvı yağ"],
+   steps:["Patlıcanları yağda hafif kızartıp bir tepsiye dizin.","Kıymayı soğan, sarımsak ve salçayla kavurup iç harcı hazırlayın.","Patlıcanların ortasını yarıp harcı doldurun, üstüne domates ve biber dilimi koyun.","Fırında 180°C'de patlıcanlar yumuşayana kadar pişirin."]},
+  {name:"Kuru Fasulye", kategori:"Ana Yemek", sure:90, butce:"orta", vej:true,
+   ing:["kuru fasulye","soğan","salça","sıvı yağ","tuz"],
+   steps:["Bir gece suda bekletilen fasulyeyi süzün.","Soğanı yağda kavurup salçayı ekleyin.","Fasulye ve suyu ilave edip yumuşayana kadar pişirin.","Pilav ile servis edin."]},
+  {name:"Nohut Yemeği", kategori:"Ana Yemek", sure:60, butce:"orta", vej:true,
+   ing:["nohut","soğan","salça","sıvı yağ"],
+   steps:["Soğanı kavurup salçayı ekleyin.","Haşlanmış veya konserve nohudu suyla ekleyin.","Kaynatıp kıvamını alınca servis edin."]},
+  {name:"Mercimek Köftesi", kategori:"Meze", sure:25, butce:"öğrenci", vej:true,
+   ing:["kırmızı mercimek","ince bulgur","soğan","salça","maydanoz","limon"],
+   steps:["Mercimeği haşlayıp sıcakken bulguru ekleyin, demlenmesini bekleyin.","Kavrulmuş soğan ve salçayı karıştırıp yoğurun.","Maydanoz ekleyip küçük parçalar halinde şekil verin.","Limonla servis edin."]},
+  {name:"Yoğurtlu Kabak", kategori:"Ana Yemek", sure:25, butce:"öğrenci", vej:true,
+   ing:["kabak","yoğurt","sarımsak","tereyağı","nane"],
+   steps:["Kabakları dilimleyip tereyağında yumuşayana kadar pişirin.","Sarımsaklı yoğurdu ayrı bir kapta hazırlayın.","Sıcak kabakların üzerine yoğurdu dökün, nane ile süsleyin."]},
+  {name:"Menemen", kategori:"Kahvaltı", sure:15, butce:"öğrenci", vej:true,
+   ing:["domates","yeşil biber","yumurta","tuz","sıvı yağ"],
+   steps:["Biberi yağda kavurup doğranmış domatesi ekleyin.","Domatesler suyunu salınca yumurtaları kırıp karıştırın.","Kıvamına gelince tuzunu ekleyip sıcak servis edin."]},
+  {name:"Ispanaklı Yumurta", kategori:"Kahvaltı", sure:15, butce:"öğrenci", vej:true,
+   ing:["ıspanak","yumurta","soğan","tereyağı"],
+   steps:["Soğanı tereyağında kavurup ıspanağı ekleyin.","Ispanak yumuşayınca yumurtaları kırıp karıştırın.","Pişince sıcak servis edin."]},
+  {name:"Fırın Patates", kategori:"Ana Yemek", sure:40, butce:"öğrenci", vej:true,
+   ing:["patates","sıvı yağ","tuz","kaşar peyniri"],
+   steps:["Patatesleri dilimleyip yağ ve tuzla harmanlayın.","Fırın tepsisine yayıp 200°C'de altın rengi olana kadar pişirin.","Üzerine rendelenmiş kaşarı serpip eritin."]},
+  {name:"Fırında Tavuk But", kategori:"Ana Yemek", sure:50, butce:"orta", vej:false,
+   ing:["tavuk but","patates","soğan","sarımsak","sıvı yağ","tuz"],
+   steps:["Tavuk butları sarımsak, yağ ve tuzla marine edin.","Patates ve soğanı iri doğrayıp etrafına dizin.","190°C fırında altın rengi olana kadar pişirin."]},
+  {name:"Tavuk Sote", kategori:"Ana Yemek", sure:25, butce:"orta", vej:false,
+   ing:["tavuk göğsü","soğan","yeşil biber","domates","sarımsak","sıvı yağ"],
+   steps:["Tavuğu küp doğrayıp yağda mühürleyin.","Soğan, biber ve sarımsağı ekleyip kavurmaya devam edin.","Domatesi ilave edip kısık ateşte suyunu çekene kadar pişirin."]},
+  {name:"Salçalı Makarna", kategori:"Ana Yemek", sure:20, butce:"öğrenci", vej:true,
+   ing:["makarna","salça","tereyağı","tuz"],
+   steps:["Makarnayı tuzlu suda haşlayın.","Tereyağında salçayı kavurup biraz haşlama suyuyla açın.","Makarnayı sosla karıştırıp servis edin."]},
+  {name:"Etli Nohutlu Pilav", kategori:"Ana Yemek", sure:45, butce:"özel", vej:false,
+   ing:["pirinç","nohut","kuşbaşı et","tereyağı","tuz"],
+   steps:["Eti tereyağında kavurup yumuşayana kadar pişirin.","Nohut ve yıkanmış pirinci ekleyip kavurun.","Sıcak su ilave edip demlenene kadar pişirin."]},
+  {name:"Yayla Çorbası", kategori:"Çorba", sure:25, butce:"öğrenci", vej:true,
+   ing:["yoğurt","pirinç","un","nane","tereyağı","tuz"],
+   steps:["Pirinci suda yumuşayana kadar haşlayın.","Yoğurt ve unu çırpıp yavaşça çorbaya ekleyin, kaynatın.","Tereyağında kızdırılmış nane ile servis edin."]},
+  {name:"Patlıcan Kızartması", kategori:"Meze", sure:30, butce:"orta", vej:true,
+   ing:["patlıcan","domates","sivri biber","sıvı yağ","sarımsak","yoğurt"],
+   steps:["Patlıcan ve biberleri yağda kızartın.","Domatesi ayrı kavurup sos haline getirin.","Sarımsaklı yoğurtla birlikte tabakta bir araya getirin."]},
+  {name:"Sütlaç", kategori:"Tatlı", sure:45, butce:"öğrenci", vej:true,
+   ing:["süt","pirinç","şeker","nişasta"],
+   steps:["Pirinci az suda yumuşayana kadar haşlayın.","Süt ve şekeri ekleyip kaynatın.","Nişastayı azıcık soğuk sütle açıp ekleyin, kıvam alana kadar karıştırın.","Fırında üstünü kızartarak veya direkt soğutarak servis edin."]},
+  {name:"İrmik Helvası", kategori:"Tatlı", sure:30, butce:"öğrenci", vej:true,
+   ing:["irmik","şeker","süt","tereyağı","çam fıstığı"],
+   steps:["Tereyağında çam fıstığını kavurup irmiği ekleyin.","Irmik pembeleşene kadar kavurmaya devam edin.","Sıcak şekerli sütü dikkatlice ekleyip karıştırın, demlenmeye bırakın."]},
+  {name:"Kısır", kategori:"Meze", sure:30, butce:"öğrenci", vej:true,
+   ing:["ince bulgur","salça","domates","salatalık","maydanoz","soğan","limon"],
+   steps:["Bulguru sıcak suyla haşlar gibi demleyin.","Salça, limon ve yağı karıştırıp bulgura ekleyin.","Doğranmış domates, salatalık, soğan ve maydanozu katıp harmanlayın."]},
+  {name:"Peynirli Omlet", kategori:"Kahvaltı", sure:10, butce:"öğrenci", vej:true,
+   ing:["yumurta","beyaz peynir","süt","tereyağı"],
+   steps:["Yumurta ve sütü çırpın.","Tereyağında kızdırıp peyniri serpin.","Yumurtayı dökün, altı pişince katlayarak servis edin."]},
+  {name:"Sucuklu Yumurta", kategori:"Kahvaltı", sure:10, butce:"öğrenci", vej:false,
+   ing:["sucuk","yumurta","tereyağı"],
+   steps:["Sucuğu tereyağında hafif kızartın.","Üzerine yumurtaları kırın.","Yumurta akı pişince tuzunu ayarlayıp sıcak servis edin."]},
+  {name:"Kaşarlı Tost", kategori:"Kahvaltı", sure:8, butce:"öğrenci", vej:true,
+   ing:["ekmek","kaşar peyniri","tereyağı"],
+   steps:["Ekmek dilimlerinin dışına ince tereyağı sürün.","Arasına bol kaşar koyup tost makinesinde kızartın.","Peynir eriyince sıcak servis edin."]},
+  {name:"Şehriye Çorbası", kategori:"Çorba", sure:20, butce:"öğrenci", vej:true,
+   ing:["şehriye","soğan","tereyağı","un","tuz"],
+   steps:["Soğanı tereyağında hafif kavurup unu ekleyin.","Su ekleyip kaynatın, şehriyeyi ilave edin.","Şehriye yumuşayınca tuzunu ayarlayıp servis edin."]},
+  {name:"Brokoli Çorbası", kategori:"Çorba", sure:25, butce:"orta", vej:true,
+   ing:["brokoli","patates","soğan","tereyağı","süt"],
+   steps:["Soğanı tereyağında kavurup brokoli ve patatesi ekleyin.","Su ekleyip sebzeler yumuşayana kadar haşlayın.","Blenderdan geçirip sütle kıvamını açın, tuzunu ayarlayın."]},
+  {name:"Türlü", kategori:"Ana Yemek", sure:50, butce:"orta", vej:true,
+   ing:["patlıcan","kabak","patates","havuç","yeşil biber","domates","sarımsak","sıvı yağ"],
+   steps:["Tüm sebzeleri iri doğrayıp sırayla yağda hafif kavurun.","Domates ve sarımsağı ekleyip biraz su ilave edin.","Kısık ateşte sebzeler yumuşayana kadar pişirin."]},
+  {name:"Izgara Köfte", kategori:"Ana Yemek", sure:25, butce:"orta", vej:false,
+   ing:["kıyma","soğan","galeta unu","tuz","karabiber"],
+   steps:["Kıymaya rendelenmiş soğan, galeta unu, tuz ve karabiberi ekleyip yoğurun.","Harcı dinlendirip köfte şekli verin.","Izgara veya tavada iki tarafını da pişirin."]},
+  {name:"Balık Tava", kategori:"Ana Yemek", sure:20, butce:"özel", vej:false,
+   ing:["balık","un","sıvı yağ","limon","tuz"],
+   steps:["Balığı tuzlayıp una bulayın.","Kızgın yağda iki tarafını da altın rengi olana kadar kızartın.","Limonla servis edin."]},
+  {name:"Karides Güveç", kategori:"Ana Yemek", sure:30, butce:"özel", vej:false,
+   ing:["karides","domates","kaşar peyniri","sıvı yağ","sarımsak"],
+   steps:["Sarımsağı yağda kavurup karidesleri ekleyin.","Domatesi ilave edip kısa süre pişirin.","Güveç kabına alıp üzerine kaşar serperek fırında eritin."]},
+  {name:"Sebzeli Güveç", kategori:"Ana Yemek", sure:45, butce:"orta", vej:true,
+   ing:["patates","havuç","kabak","yeşil biber","domates","sıvı yağ"],
+   steps:["Tüm sebzeleri küp doğrayıp güveç kabına yerleştirin.","Üzerine yağ ve az su gezdirin.","Fırında sebzeler yumuşayana kadar pişirin."]},
+  {name:"Kremalı Mantı", kategori:"Ana Yemek", sure:20, butce:"orta", vej:true,
+   ing:["hazır mantı","yoğurt","tereyağı","pul biber","sarımsak"],
+   steps:["Hazır mantıyı kaynar suda haşlayın.","Sarımsaklı yoğurdu ayrı bir kapta hazırlayın.","Süzülen mantıyı yoğurtla harmanlayıp üzerine pul biberli tereyağı gezdirin."]},
+  {name:"Sade Pirinç Pilavı", kategori:"Ana Yemek", sure:20, butce:"öğrenci", vej:true,
+   ing:["pirinç","tereyağı","tuz"],
+   steps:["Pirinci yıkayıp süzün.","Tereyağında hafifçe kavurup sıcak su ekleyin.","Suyunu çekene kadar kısık ateşte pişirip demlendirin."]},
+  {name:"Bulgur Pilavı", kategori:"Ana Yemek", sure:25, butce:"öğrenci", vej:true,
+   ing:["iri bulgur","domates","soğan","tereyağı","tuz"],
+   steps:["Soğanı tereyağında kavurup rendelenmiş domatesi ekleyin.","Bulguru ilave edip kısa süre kavurun.","Sıcak su ekleyip suyunu çekene kadar pişirin."]},
+  {name:"Çoban Salata", kategori:"Meze", sure:10, butce:"öğrenci", vej:true,
+   ing:["domates","salatalık","soğan","yeşil biber","maydanoz","limon","sıvı yağ"],
+   steps:["Tüm sebzeleri küçük küp doğrayın.","Maydanozu ince kıyıp ekleyin.","Limon ve yağla harmanlayıp tuzunu ayarlayın."]},
+  {name:"Zeytinyağlı Taze Fasulye", kategori:"Meze", sure:40, butce:"orta", vej:true,
+   ing:["taze fasulye","domates","soğan","sıvı yağ"],
+   steps:["Soğanı yağda hafif kavurun.","Ayıklanmış taze fasulyeyi ve rendelenmiş domatesi ekleyin.","Az suyla kısık ateşte yumuşayana kadar pişirip soğuk servis edin."]},
+  {name:"Haydari", kategori:"Meze", sure:10, butce:"öğrenci", vej:true,
+   ing:["yoğurt","sarımsak","nane","sıvı yağ"],
+   steps:["Yoğurdu süzüp sarımsakla karıştırın.","Nane ve az yağ ekleyip harmanlayın.","Soğutup servis edin."]},
+  {name:"Humus", kategori:"Meze", sure:15, butce:"öğrenci", vej:true,
+   ing:["nohut","tahin","limon","sarımsak","sıvı yağ"],
+   steps:["Haşlanmış nohudu tahin, limon ve sarımsakla blenderdan geçirin.","Kıvamını yağla ayarlayın.","Üzerine yağ gezdirip servis edin."]},
+  {name:"Cacık", kategori:"Meze", sure:10, butce:"öğrenci", vej:true,
+   ing:["yoğurt","salatalık","sarımsak","nane"],
+   steps:["Salatalığı rendeleyip yoğurtla karıştırın.","Sarımsak ve naneyi ekleyin.","Soğuk servis edin."]},
+  {name:"Elmalı Kek", kategori:"Tatlı", sure:50, butce:"öğrenci", vej:true,
+   ing:["un","yumurta","şeker","sıvı yağ","elma","kabartma tozu"],
+   steps:["Yumurta ve şekeri çırpın, yağı ekleyin.","Un ve kabartma tozunu eleyerek karıştırın.","Doğranmış elmayı ilave edip kalıba dökün.","180°C fırında kürdan temiz çıkana kadar pişirin."]},
+  {name:"Cevizli Bal-Yoğurt", kategori:"Tatlı", sure:5, butce:"öğrenci", vej:true,
+   ing:["yoğurt","bal","ceviz"],
+   steps:["Yoğurdu kaseye alın.","Üzerine balı gezdirin.","Kırılmış cevizle süsleyip servis edin."]},
+  {name:"Ayran", kategori:"İçecek", sure:5, butce:"öğrenci", vej:true,
+   ing:["yoğurt","tuz"],
+   steps:["Yoğurdu soğuk suyla iyice çırpın.","Tuzunu ekleyip köpürene kadar karıştırın.","Buzla servis edin."]},
+  {name:"Türk Kahvesi", kategori:"İçecek", sure:8, butce:"öğrenci", vej:true,
+   ing:["kahve","şeker"],
+   steps:["Cezveye soğuk su, kahve ve şekeri ekleyin.","Kısık ateşte karıştırmadan köpürene kadar pişirin.","Köpüğü fincanlara paylaştırıp kalanını demlendirin."]},
+  {name:"Limonata", kategori:"İçecek", sure:10, butce:"öğrenci", vej:true,
+   ing:["limon","şeker","nane"],
+   steps:["Limonları sıkıp suyunu alın.","Şeker ve soğuk suyla karıştırın.","Nane yapraklarıyla süsleyip buzla servis edin."]}
+];
+
+let selected = new Set(STAPLES);
+let shoppingList = new Set();
+
+function renderPantry(){
+  const el = document.getElementById('pantry');
+  el.innerHTML = '';
+  CATEGORIES.forEach(cat=>{
+    const block = document.createElement('div');
+    block.className = 'cat-block';
+    const title = document.createElement('div');
+    title.className = 'cat-title';
+    title.textContent = cat.name;
+    block.appendChild(title);
+    const chips = document.createElement('div');
+    chips.className = 'chips';
+    cat.items.forEach(item=>{
+      const chip = document.createElement('button');
+      chip.type = 'button';
+      chip.className = 'chip' + (STAPLES.includes(item) ? ' staple' : '') + (selected.has(item) ? ' active' : '');
+      chip.textContent = item;
+      chip.setAttribute('aria-pressed', selected.has(item));
+      chip.addEventListener('click', ()=>{
+        if(selected.has(item)){ selected.delete(item); } else { selected.add(item); }
+        chip.classList.toggle('active');
+        chip.setAttribute('aria-pressed', selected.has(item));
+        render();
+      });
+      chips.appendChild(chip);
+    });
+    block.appendChild(chips);
+    el.appendChild(block);
+  });
+}
+
+function renderShopList(){
+  const ul = document.getElementById('shopList');
+  const emptyMsg = document.getElementById('shopEmpty');
+  ul.innerHTML = '';
+  if(shoppingList.size === 0){
+    emptyMsg.style.display = 'block';
+    return;
+  }
+  emptyMsg.style.display = 'none';
+  [...shoppingList].sort().forEach(item=>{
+    const li = document.createElement('li');
+    li.innerHTML = `<span>${item}</span>`;
+    const btn = document.createElement('button');
+    btn.textContent = '✕';
+    btn.setAttribute('aria-label', item + ' listeden çıkar');
+    btn.addEventListener('click', ()=>{ shoppingList.delete(item); renderShopList(); });
+    li.appendChild(btn);
+    ul.appendChild(li);
+  });
+}
+
+function render(){
+  const tolerance = parseInt(document.getElementById('tolerance').value, 10);
+  const budget = document.getElementById('budget').value;
+  const kategori = document.getElementById('kategori').value;
+  const diyet = document.getElementById('diyet').value;
+  const sortBy = document.getElementById('sort').value;
+  const searchText = document.getElementById('search').value.trim().toLocaleLowerCase('tr');
+
+  let matches = RECIPES.map(r=>{
+    const missing = r.ing.filter(i=>!selected.has(i));
+    const matchPct = Math.round(((r.ing.length - missing.length) / r.ing.length) * 100);
+    return {...r, missing, matchPct};
+  }).filter(r=>{
+    if(r.missing.length > tolerance) return false;
+    if(budget !== 'all' && r.butce !== budget) return false;
+    if(kategori !== 'all' && r.kategori !== kategori) return false;
+    if(diyet === 'vej' && !r.vej) return false;
+    if(searchText){
+      const hay = (r.name + ' ' + r.ing.join(' ')).toLocaleLowerCase('tr');
+      if(!hay.includes(searchText)) return false;
+    }
+    return true;
+  });
+
+  if(sortBy === 'sure'){
+    matches.sort((a,b)=> a.sure - b.sure || a.missing.length - b.missing.length);
+  } else if(sortBy === 'isim'){
+    matches.sort((a,b)=> a.name.localeCompare(b.name, 'tr'));
+  } else {
+    matches.sort((a,b)=> a.missing.length - b.missing.length || b.matchPct - a.matchPct || a.sure - b.sure);
+  }
+
+  document.getElementById('totalCount').textContent = matches.length;
+  const grid = document.getElementById('results');
+  const empty = document.getElementById('emptyState');
+  grid.innerHTML = '';
+
+  if(matches.length === 0){
+    empty.style.display = 'block';
+    return;
+  }
+  empty.style.display = 'none';
+
+  matches.forEach((r, idx)=>{
+    const card = document.createElement('div');
+    card.className = 'card';
+
+    const stampClass = r.missing.length === 0 ? '' : (r.missing.length === 1 ? 'partial' : 'far');
+    const stampText = r.missing.length === 0 ? 'TAM<br>UYGUN' : (r.missing.length + ' EKSİK');
+
+    const ingHtml = r.ing.map(i=>{
+      const has = selected.has(i);
+      return `<li class="${has ? 'have' : 'miss'}">${i}</li>`;
+    }).join('');
+
+    card.innerHTML = `
+      <div class="stamp ${stampClass}">${stampText}</div>
+      <h3>${r.name}</h3>
+      <div class="meta"><span>${r.kategori}</span><span>${r.sure} dk</span><span>${r.butce}</span>${r.vej ? '<span class="vej">🌱 vejetaryen</span>' : ''}</div>
+      <ul class="ing-list">${ingHtml}</ul>
+      ${r.missing.length ? `<div class="missing-line">Eksik: ${r.missing.join(', ')}</div>` : ''}
+      <div class="divider"></div>
+      <div class="card-btns">
+        <button class="expand-btn" data-idx="${idx}">Tarifi Gör</button>
+        <button class="list-btn" data-idx="${idx}" ${r.missing.length === 0 ? 'disabled' : ''}>🛒 Eksikleri Ekle</button>
+      </div>
+      <div class="steps" id="steps-${idx}">
+        <ol>${r.steps.map(s=>`<li>${s}</li>`).join('')}</ol>
+      </div>
+    `;
+    grid.appendChild(card);
+
+    card.querySelector('.expand-btn').addEventListener('click', (e)=>{
+      const stepsEl = document.getElementById('steps-' + idx);
+      const isOpen = stepsEl.classList.toggle('open');
+      e.target.textContent = isOpen ? 'Tarifi Gizle' : 'Tarifi Gör';
+    });
+    const listBtn = card.querySelector('.list-btn');
+    if(listBtn){
+      listBtn.addEventListener('click', ()=>{
+        r.missing.forEach(i=>shoppingList.add(i));
+        renderShopList();
+      });
+    }
+  });
+}
+
+document.getElementById('tolerance').addEventListener('change', render);
+document.getElementById('budget').addEventListener('change', render);
+document.getElementById('kategori').addEventListener('change', render);
+document.getElementById('diyet').addEventListener('change', render);
+document.getElementById('sort').addEventListener('change', render);
+document.getElementById('search').addEventListener('input', render);
+document.getElementById('resetBtn').addEventListener('click', ()=>{
+  selected = new Set(STAPLES);
+  renderPantry();
+  render();
+});
+document.getElementById('clearShopBtn').addEventListener('click', ()=>{
+  shoppingList.clear();
+  renderShopList();
+});
+document.getElementById('copyBtn').addEventListener('click', ()=>{
+  const text = [...shoppingList].sort().join('\n');
+  if(!text){ return; }
+  navigator.clipboard.writeText(text).then(()=>{
+    const btn = document.getElementById('copyBtn');
+    const old = btn.textContent;
+    btn.textContent = 'Kopyalandı!';
+    setTimeout(()=>{ btn.textContent = old; }, 1500);
+  });
+});
+
+// receipt header details
+document.getElementById('fisNo').textContent = 'FİŞ NO: ' + Math.floor(1000 + Math.random()*8999);
+const now = new Date();
+document.getElementById('fisTarih').textContent = 'TARİH: ' + now.toLocaleDateString('tr-TR');
+
+renderPantry();
+render();
+renderShopList();
+</script>
+</body>
+</html>
