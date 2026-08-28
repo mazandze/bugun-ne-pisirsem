@@ -1,6 +1,14 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-KL0HWNF965"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-KL0HWNF965');
+</script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Bugün Ne Pişirsem? — Dolabına Göre Tarif</title>
@@ -33,7 +41,6 @@
   a{color:inherit;}
   .wrap{max-width:1080px;margin:0 auto;padding:28px 20px;}
 
-  /* ---------- HERO / RECEIPT HEADER ---------- */
   .hero{
     background:var(--card);
     border:1px solid var(--line);
@@ -72,7 +79,6 @@
     transform:rotate(-2deg); display:inline-block; margin-top:14px;
   }
 
-  /* ---------- SECTION LABELS ---------- */
   .section-label{
     font-family:'Archivo Black', sans-serif;
     font-size:13px; letter-spacing:.14em; text-transform:uppercase;
@@ -84,7 +90,6 @@
     content:""; flex:1; height:1px; background:repeating-linear-gradient(90deg, var(--line) 0 6px, transparent 0 10px);
   }
 
-  /* ---------- PANTRY (ingredient picker) ---------- */
   .pantry{
     background:var(--card); border:1px solid var(--line); padding:22px 22px 8px;
   }
@@ -111,7 +116,6 @@
   }
   .chip:focus-visible{outline:2px solid var(--red); outline-offset:2px;}
 
-  /* ---------- FILTER BAR ---------- */
   .filters{
     display:flex; flex-wrap:wrap; gap:16px; align-items:flex-end;
     background:var(--card); border:1px solid var(--line); padding:18px 22px; margin-top:14px;
@@ -133,7 +137,6 @@
   }
   .reset-btn:hover{background:var(--red); color:#fff;}
 
-  /* ---------- RESULT SUMMARY LINE ---------- */
   .total-line{
     display:flex; justify-content:space-between; align-items:baseline;
     border-top:1px dashed var(--line); border-bottom:1px dashed var(--line);
@@ -141,7 +144,6 @@
   }
   .total-line b{font-family:'Archivo Black', sans-serif; font-size:15px;}
 
-  /* ---------- RESULTS GRID ---------- */
   .grid{
     display:grid; grid-template-columns:repeat(auto-fill, minmax(280px, 1fr)); gap:22px 18px; margin-top:18px;
   }
@@ -205,7 +207,6 @@
   }
   .empty .big{font-family:'Caveat', cursive; font-size:26px; color:var(--green); display:block; margin-bottom:8px;}
 
-  /* ---------- SHOPPING LIST FİŞ ---------- */
   .shop-fis{
     background:var(--card); border:1px solid var(--line); padding:22px 26px; margin-top:40px; max-width:380px;
     box-shadow:0 2px 0 var(--line); position:relative;
@@ -649,7 +650,6 @@ document.getElementById('copyBtn').addEventListener('click', ()=>{
   });
 });
 
-// receipt header details
 document.getElementById('fisNo').textContent = 'FİŞ NO: ' + Math.floor(1000 + Math.random()*8999);
 const now = new Date();
 document.getElementById('fisTarih').textContent = 'TARİH: ' + now.toLocaleDateString('tr-TR');
